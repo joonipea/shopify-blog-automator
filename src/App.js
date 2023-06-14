@@ -12,6 +12,7 @@ const App = () => {
             src: "",
             alt: ""
         }
+        console.log(url);
         await fetch(proxy + url).then((res) => {
             return res.text()
         }).then((html) => {
