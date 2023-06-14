@@ -13,13 +13,13 @@ const App = () => {
             alt: ""
         }
         console.log(url);
-        await fetch(proxy + url).then((res) => {
+        await fetch(url).then((res) => {
             return res.text()
         }).then((html) => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, "text/html");
-            const imgSrc = doc.querySelectorAll("figure img")[imageOrder % 2].src.replace("480x","800x").split("?")[0];
-            const imgAlt = doc.querySelectorAll("figure img")[imageOrder % 2].alt;
+            const imgSrc = doc.querySelectorAll(".product-gallery__item figure img")[imageOrder % 2].src.replace("480x","800x").split("?")[0];
+            const imgAlt = doc.querySelectorAll(".product-gallery__item figure img")[imageOrder % 2].alt;
             console.log({doc, imgAlt, imgSrc});
             image.src = imgSrc;
             image.alt = imgAlt;
