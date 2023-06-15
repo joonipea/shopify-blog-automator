@@ -6,7 +6,7 @@ const App = () => {
     const input = useRef();
     const output = useRef();
     let imageOrder = 0;
-    const proxy = "https://fathomless-basin-04662.herokuapp.com/";
+    let imageQuery = ".your-image-container-class img"; //example: ".product-gallery__item figure img"
     const getImage = async (url) => {
         let image = {
             src: "",
@@ -18,26 +18,27 @@ const App = () => {
         }).then((html) => {
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, "text/html");
-            const imgSrc = doc.querySelectorAll(".product-gallery__item figure img")[imageOrder % 2].src.replace("480x","800x").split("?")[0];
-            const imgAlt = doc.querySelectorAll(".product-gallery__item figure img")[imageOrder % 2].alt;
+            const imgSrc = doc.querySelectorAll(imageQuery)[imageOrder % 2].src.replace("480x","800x").split("?")[0];
+            const imgAlt = doc.querySelectorAll(imageQuery)[imageOrder % 2].alt;
             console.log({doc, imgAlt, imgSrc});
             image.src = imgSrc;
             image.alt = imgAlt;
             imageOrder++;
-            console.log(imageOrder);
         })
         return image;
     };
 
     const handleSubmit = async () => {
         const raw = input.current.value;
-        const headered = raw.replace(/<p><b>/g, "<h3>").replace(/<\/b><\/p>/g, "</h3>").replace(/<p>\s<\/p>/g, "");
+        //replace bolded text with header
+        const headered = raw.replace(/<p><b>/g, "<h3>").replace(/<\/b><\/p>/g, "</h3>").replace(/<p>\s<\/p>/g, ""); 
+        //find all links and push them to an array
         const urls = [...headered.matchAll(/<p><a href="(.*?)">.*<\/p>/g)];
-        console.log(urls);
         const formatted = async () => { 
             let formant = headered;
             for await (const url of urls) {
                 const img = await getImage(url[1]);
+                // replace link with image wrapped in anchor tag
                 formant = formant.replace(/<p><a href="(.*?)">.*<\/p>/, `<div style="text-align: center"><a href="${url[1]}"><img style="float:none" alt="${img.alt}" src="${img.src}" /></a></div>`);
             }
             return formant;
